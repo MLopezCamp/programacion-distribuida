@@ -9,5 +9,5 @@ print("Servidor esperando conexion...")
 conn, addr = server.accept()
 print("Cliente conectado:", addr)
 
-conn.sendall(b"Hola desde el servidor")
+conn.sendall(b"Hola Mauricio Lopez")
 conn.close()
