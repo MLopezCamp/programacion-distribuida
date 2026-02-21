@@ -1,31 +1,33 @@
 import socket
 import threading
 
+contador_clientes = 0
+lock = threading.Lock()
+
 def handle_client(conn, addr):
-	print(f"cliente conetado desde {addr}")
+    global contador_clientes
 
-	try:
-		student_name = conn.recv(1024).decode()
-		response = f"Hola {student_name}, estas conectado a un servidor concurrente"
-		conn.sendall(response.encode())
-	except Exeption as e:
-		print(f"Error con {addr} : {e}")
-	finally:
-		conn.close()
-		print(f"Conexion cerrada {addr}")
+    name = conn.recv(1024).decode()
 
+    with lock:
+        contador_clientes += 1
+        numero = contador_clientes
+
+    print(f"Cliente {contador_clientes} atendido desde {addr}")
+
+    response = f"Hola {name}, eres el cliente número {contador_clientes}"
+    conn.sendall(response.encode())
+
+    conn.close()
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(("0.0.0.0", 5000))
-server.listen(1)
+server.listen()
 
-print("Servidor esperando conexion...")
+print("Servidor concurrente con contador...")
 
 while True:
-	conn, addr = server.accept()
-	
-	client_thread = threading.Thread(
-		target=handle_client,
-		args=(conn,addr)
-	)
-	client_thread.start()
+    conn, addr = server.accept()
+    thread = threading.Thread(target=handle_client, args=(conn, addr))
+    thread.start()
+
