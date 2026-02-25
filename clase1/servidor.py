@@ -1,5 +1,6 @@
 import socket
 import threading
+import time
 
 contador_clientes = 0
 lock = threading.Lock()
@@ -9,9 +10,9 @@ def handle_client(conn, addr):
 
     name = conn.recv(1024).decode()
 
-    with lock:
-        contador_clientes += 1
-        numero = contador_clientes
+    time.sleep(10)  #delay de 5 segundos
+
+    contador_clientes += 1
 
     print(f"Cliente {contador_clientes} atendido desde {addr}")
 
